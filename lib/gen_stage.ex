@@ -367,7 +367,7 @@ defmodule GenStage do
   To handle such cases, we will use a two-element tuple as the broadcaster state
   where the first element is a queue and the second element is the pending
   demand.  When events arrive and there are no consumers, we will store the
-  event in the queue alongside information about the process that broadcasted
+  event in the queue alongside information about the process that broadcast
   the event. When consumers send demand and there are not enough events, we will
   increase the pending demand.  Once we have both data and demand, we
   acknowledge the process that has sent the event to the broadcaster and finally
@@ -457,7 +457,7 @@ defmodule GenStage do
 
   At this point, all consumers must have sent their demand which we were not
   able to fulfill. Now by calling `QueueBroadcaster.sync_notify/1`, the event
-  shall be broadcasted to all consumers at once as we have buffered the demand
+  shall be broadcast to all consumers at once as we have buffered the demand
   in the producer:
 
       QueueBroadcaster.sync_notify(:hello_world)
@@ -494,8 +494,8 @@ defmodule GenStage do
   is set to `:manual`, developers must use `GenStage.ask/3` to send
   demand upstream when necessary.
 
-  Note that when `:max_demand` and `:min_demand` must be manually respected when
-  manually asking for demand through `GenStage.ask/3`.
+  Note that `:max_demand` and `:min_demand` must be manually respected when
+  asking for demand through `GenStage.ask/3`.
 
   For example, the `ConsumerSupervisor` module processes events
   asynchronously by starting a process for each event and this is achieved by
@@ -1500,10 +1500,9 @@ defmodule GenStage do
       GenStage.stream([{producer, max_demand: 100}])
 
   If the producer process exits, the stream will exit with the same
-  reason. If it is expected that the producer will exit and the stream
-  should just halt when such happens, setting the cancel option to
-  either `:transient` or `:temporary` will avoid the stream for exiting
-  as described in the `sync_subscribe/3` docs:
+  reason. If you want the stream to halt instead, set the cancel option
+  to either `:transient` or `:temporary` as described in the
+  `sync_subscribe/3` docs:
 
       GenStage.stream([{producer, max_demand: 100, cancel: :transient}])
 
